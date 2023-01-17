@@ -1,3 +1,5 @@
+alias poetry="$HOME/.local/bin/poetry"
+
 alias l="ls --color=auto -vFh"
 alias ls="ls --color=auto"
 alias las="ls -alTOvFh --color=auto"
