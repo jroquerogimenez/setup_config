@@ -1,0 +1,181 @@
+FROM ubuntu:22.04
+
+LABEL authors="Jaime Roquero Gimenez" \
+    description="Base docker image for RGTechnologies."
+
+
+ENV LC_ALL en_US.UTF-8
+ENV LANGUAGE en_US.UTF-8
+ENV LANG en_US.UTF-8
+
+ENV DEBIAN_FRONTEND noninteractive
+
+
+ARG BUILD_VER=0.0
+ARG GIT_BRANCH="master"
+ENV GIT_BRANCH="${GIT_BRANCH}"
+ENV BUILD_VER="${BUILD_VER}"
+
+
+# Set one or more  labels
+LABEL version="${BUILD_VER}"
+
+# Install basic OS tools on top of ubuntu to facilitate next steps
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+    apt-utils \
+    apt-transport-https \
+    bison \
+    byacc \
+    build-essential \
+    ca-certificates \
+    curl \
+    default-jdk \
+    default-jre \
+    ed \
+    gfortran \
+    git \
+    gnupg1 \
+    gnupg2 \
+    graphviz \
+    gzip \
+    less \
+    libbz2-dev \
+    libcurl4-openssl-dev \
+    libffi-dev \
+    liblzma-dev \
+    libncurses5-dev \
+    libreadline8 \
+    libreadline-dev \
+    libsqlite3-dev \
+    libssl-dev \
+    libz-dev \
+    littler \
+    llvm \
+    locales \
+    make \
+    nano \
+    procps \
+    python3-dev \
+    #software-properties-common \
+    ssh \
+    tk-dev \
+    unzip \
+    vim \
+    wget \
+    xz-utils \
+    zlib1g-dev \
+    && apt-get clean -y && rm -rf /var/lib/apt/lists/*
+
+
+RUN apt-get update \
+    ncbi-blast+ \
+    bwa \
+    bowtie2 \
+    && apt-get clean -y && rm -rf /var/lib/apt/lists/*
+
+
+## Configure default locale, see https://github.com/rocker-org/rocker/issues/19
+RUN echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
+    && locale-gen en_US.utf8 \
+    && /usr/sbin/update-locale LANG=en_US.UTF-8
+
+ENV HOME /home/ubuntu
+
+## Install Nextflow
+
+WORKDIR /usr/local/bin/
+RUN wget -qO- https://get.nextflow.io | bash
+RUN chmod 755 nextflow
+
+## Install samtools
+
+WORKDIR /usr/local/lib
+RUN wget https://github.com/samtools/samtools/releases/download/1.17/samtools-1.17.tar.bz2
+RUN tar -xvf samtools-1.17.tar.bz2 && rm samtools-1.17.tar.bz2
+WORKDIR /usr/local/lib/samtools-1.17
+RUN ./configure --prefix=/usr/local/
+RUN make
+RUN make install
+
+# Install bioawk
+
+WORKDIR /usr/local/lib
+RUN git clone https://github.com/lh3/bioawk.git
+WORKDIR /usr/local/lib/bioawk
+RUN make
+RUN ln -s /usr/local/lib/bioawk/bioawk /usr/local/bin
+
+# Install Bedtools
+
+WORKDIR /usr/local/bin
+RUN wget https://github.com/arq5x/bedtools2/releases/download/v2.30.0/bedtools.static.binary
+RUN chmod 755 /usr/local/bin/bedtools
+
+# Install AWS CLI
+
+WORKDIR /usr/local/lib
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+RUN unzip awscliv2.zip && rm awscliv2.zip
+RUN ./aws/install
+
+# Install pyenv
+
+RUN git clone https://github.com/pyenv/pyenv.git $HOME/.pyenv
+ENV PYENV_ROOT="$HOME/.pyenv"
+ENV PATH="$PYENV_ROOT/bin:$PATH"
+RUN pyenv init -
+RUN pyenv install 3.10.12
+RUN pyenv global 3.10.12
+
+# Install personal setup
+WORKDIR $HOME
+RUN git clone https://github.com/jroquerogimenez/setup_config.git
+RUN cp -rT $HOME/setup_config/Linux $HOME/
+
+# Install Poetry
+
+RUN curl -sSL https://install.python-poetry.org | /home/ubuntu/.pyenv/shims/python - --yes
+ENV PATH="$HOME/.local/bin:$PATH"
+RUN poetry config virtualenvs.in-project true
+WORKDIR $HOME/workspace
+RUN mkdir workspace && mv $HOME/pyproject.toml $HOME/workspace/
+RUN poetry env use $HOME/.pyenv/shims/python
+RUN poetry install
+
+# # Install Picard tools
+
+# WORKDIR /usr/local/lib
+# RUN git clone https://github.com/broadinstitute/picard.git
+# WORKDIR /usr/local/lib/picard
+# RUN ./gradlew shadowJar
+# RUN ln -s /usr/local/lib/picard/build/libs/picard.jar /usr/local/bin
+# RUN chmod 755 /usr/local/bin/picard.jar
+# RUN sh -c 'echo "#!/bin/bash\n java -jar /usr/local/bin/picard.jar \$@"> picard_executable'
+# RUN mv picard_executable /usr/local/bin/picard
+# RUN chmod 755 /usr/local/bin/picard
+
+# Install nomad
+
+WORKDIR $HOME
+RUN git clone https://github.com/refresh-bio/nomad
+WORKDIR $HOME/nomad
+RUN make -j
+RUN make install
+
+# Install splash
+WORKDIR /usr/local/bin
+RUN curl -L https://github.com/refresh-bio/SPLASH/releases/download/v2.1.4/splash-2.1.4.linux.x64.tar.gz | tar xz
+
+# Install UCSC toolkit
+
+WORKDIR /usr/local/bin
+RUN rsync -aP rsync://hgdownload.soe.ucsc.edu/genome/admin/exe/linux.x86_64/ ./
+
+# Clean up
+
+WORKDIR $HOME
+
+RUN cd /home \
+    mkdir matplotlib_tmp
+ENV MPLCONFIGDIR="/home/matplotlib_tmp/"
