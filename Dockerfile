@@ -172,6 +172,29 @@ RUN curl -L https://github.com/refresh-bio/SPLASH/releases/download/v2.1.4/splas
 WORKDIR /usr/local/bin
 RUN rsync -aP rsync://hgdownload.soe.ucsc.edu/genome/admin/exe/linux.x86_64/ ./
 
+# Install STAR
+
+# Actually there are already compiled binary files.
+WORKDIR /usr/local/lib
+RUN wget https://github.com/alexdobin/STAR/archive/2.7.11a.tar.gz
+RUN tar -xzf 2.7.11a.tar.gz
+WORKDIR /usr/local/lib/STAR-2.7.11a/source
+RUN make STAR
+
+# Install NCBI datasets CLI tool.
+WORKDIR /usr/local/lib
+RUN curl -o datasets 'https://ftp.ncbi.nlm.nih.gov/pub/datasets/command-line/v2/linux-amd64/datasets'
+RUN curl -o dataformat 'https://ftp.ncbi.nlm.nih.gov/pub/datasets/command-line/v2/linux-amd64/dataformat'
+RUN chmod +x datasets dataformat
+
+# Install cufflinks
+WORKDIR	/usr/local/lib
+RUN wget http://cole-trapnell-lab.github.io/cufflinks/assets/downloads/cufflinks-2.2.1.Linux_x86_64.tar.gz
+RUN tar -xvf cufflinks-2.2.1.Linux_x86_64.tar.gz
+# then manually symlink all the executables to /usr/local/bin. Not the most elegant way.
+# ln -s /usr/local/lib/cufflinks-2.2.1.Linux_x86_64/gtf_to_sam /usr/local/bin/gtf_to_sam
+
+
 # Clean up
 
 WORKDIR $HOME
