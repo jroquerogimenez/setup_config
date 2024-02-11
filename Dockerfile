@@ -195,6 +195,14 @@ RUN tar -xvf cufflinks-2.2.1.Linux_x86_64.tar.gz
 # ln -s /usr/local/lib/cufflinks-2.2.1.Linux_x86_64/gtf_to_sam /usr/local/bin/gtf_to_sam
 
 
+# Install Aspera: IBM software for fast file download that is used by SRA.
+# Follow instructions in IBM software, download a shell script and execute it. It will install binaries
+# in ~/.aspera/connect/bin/
+# Then make those binaries accessible by creating symlinks in /usr/local/bin. Navigate to the above folder then
+# sudo find . -type f -executable -exec ln -s "$(pwd)/{}" /usr/local/bin/ \;
+
+
+
 # Clean up
 
 WORKDIR $HOME
