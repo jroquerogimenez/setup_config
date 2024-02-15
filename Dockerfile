@@ -199,7 +199,9 @@ RUN tar -xvf cufflinks-2.2.1.Linux_x86_64.tar.gz
 # Follow instructions in IBM software, download a shell script and execute it. It will install binaries
 # in ~/.aspera/connect/bin/
 # Then make those binaries accessible by creating symlinks in /usr/local/bin. Navigate to the above folder then
-# sudo find . -type f -executable -exec ln -s "$(pwd)/{}" /usr/local/bin/ \;
+# find . -type f -executable -exec sh -c 'file="{}"; sudo ln -s "$(pwd)/${file#./}" /usr/local/bin/' \;
+# To update a package and its symlinks, especially if some symlinks in /usr/local/bin are symlinks of symlinks in /usr/local/lib/...
+# find . \( -type f -executable -o -type l \) -exec sh -c 'for file; do sudo ln -sf "$(realpath -- "$file")" "/usr/local/bin/$(basename "$file")"; done' sh {} +
 
 
 
