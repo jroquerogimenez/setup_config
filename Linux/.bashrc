@@ -1,31 +1,41 @@
+# ~/.bashrc: executed by bash(1) for non-login shells.
+# see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
+# for examples
 
-# Set vim as default text editor.
-export EDITOR=vim
+# If not running interactively, don't do anything
+case $- in
+    *i*) ;;
+      *) return;;
+esac
 
-# Don't put duplicate lines or lines starting with space in the history.
+# don't put duplicate lines or lines starting with space in the history.
 # See bash(1) for more options
 HISTCONTROL=ignoreboth
 
-# Append to the history file, don't overwrite it
+# append to the history file, don't overwrite it
 shopt -s histappend
 
-# For setting history length see HISTSIZE and HISTFILESIZE in bash(1)
+# for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
 HISTSIZE=1000
 HISTFILESIZE=2000
 
-# Check the window size after each command and, if necessary,
+# check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.
 shopt -s checkwinsize
 
-# Make less more friendly for non-text input files, see lesspipe(1)
+# If set, the pattern "**" used in a pathname expansion context will
+# match all files and zero or more directories and subdirectories.
+#shopt -s globstar
+
+# make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
-# Set variable identifying the chroot you work in (used in the prompt below)
+# set variable identifying the chroot you work in (used in the prompt below)
 if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
     debian_chroot=$(cat /etc/debian_chroot)
 fi
 
-# Set a fancy prompt (non-color, unless we know we "want" color)
+# set a fancy prompt (non-color, unless we know we "want" color)
 case "$TERM" in
     xterm-color|*-256color) color_prompt=yes;;
 esac
@@ -62,8 +72,28 @@ xterm*|rxvt*)
     ;;
 esac
 
+# enable color support of ls and also add handy aliases
+if [ -x /usr/bin/dircolors ]; then
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    alias ls='ls --color=auto'
+    #alias dir='dir --color=auto'
+    #alias vdir='vdir --color=auto'
+
+    alias grep='grep --color=auto'
+    alias fgrep='fgrep --color=auto'
+    alias egrep='egrep --color=auto'
+fi
+
 # colored GCC warnings and errors
 #export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+
+# some more ls aliases
+alias lsa='ls -AlFh'
+alias lsr='ls -AlFRh'
+
+# Add an "alert" alias for long running commands.  Use like so:
+#   sleep 10; alert
+alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
 # Alias definitions.
 # You may want to put all your additions into a separate file like
@@ -74,7 +104,7 @@ if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
 
-# Enable programmable completion features (you don't need to enable
+# enable programmable completion features (you don't need to enable
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
 # sources /etc/bash.bashrc).
 if ! shopt -oq posix; then
@@ -86,14 +116,44 @@ if ! shopt -oq posix; then
 fi
 
 
-PROMPT_COMMAND='echo -ne "\033]0;$PWD\007"'
-
-# Configure pyenv
+export PYENV_ROOT="$HOME/.pyenv"
+command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
 
+export PATH="/home/ubuntu/.local/bin:$PATH"
+export CVXOPT_BUILD_GLPK=1
+export CVXOPT_GLPK_LIB_DIR="/usr/local/lib"
+export CVXOPT_GLPK_INC_DIR="/usr/local/include"
 
+##########
+# HISTORY
+##########
 
+# Set history file location
+export HISTFILE="$HOME/.bash_history"
 
+# Set the maximum number of lines contained in the history file
+export HISTSIZE=50000
 
+# Set the number of commands to remember in the command history (the history list)
+export HISTFILESIZE=50000
 
+# Append to the history file, don't overwrite it
+shopt -s histappend
+
+# Record each line as it gets issued
+PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
+
+# Ignore duplicate commands
+export HISTCONTROL=ignoredups
+
+# Ignore commands that start with a space
+export HISTCONTROL=ignoreboth
+
+# Combine both ignoredups and ignorespace in HISTCONTROL
+export HISTCONTROL=ignoreboth:erasedups
+
+# Share history between all sessions
+shopt -s histappend
+PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
 

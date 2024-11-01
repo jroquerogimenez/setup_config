@@ -29,6 +29,7 @@ RUN apt-get update \
     byacc \
     build-essential \
     ca-certificates \
+    cmake \
     curl \
     default-jdk \
     default-jre \
@@ -41,6 +42,7 @@ RUN apt-get update \
     gzip \
     less \
     libbz2-dev \
+    libboost-all-dev \
     libcurl4-openssl-dev \
     libffi-dev \
     liblzma-dev \
@@ -49,6 +51,7 @@ RUN apt-get update \
     libreadline-dev \
     libsqlite3-dev \
     libssl-dev \
+    libtbb
     libz-dev \
     littler \
     llvm \
@@ -58,6 +61,7 @@ RUN apt-get update \
     procps \
     python3-dev \
     #software-properties-common \
+    s3fs \
     ssh \
     tk-dev \
     unzip \
@@ -202,6 +206,14 @@ RUN tar -xvf cufflinks-2.2.1.Linux_x86_64.tar.gz
 # find . -type f -executable -exec sh -c 'file="{}"; sudo ln -s "$(pwd)/${file#./}" /usr/local/bin/' \;
 # To update a package and its symlinks, especially if some symlinks in /usr/local/bin are symlinks of symlinks in /usr/local/lib/...
 # find . \( -type f -executable -o -type l \) -exec sh -c 'for file; do sudo ln -sf "$(realpath -- "$file")" "/usr/local/bin/$(basename "$file")"; done' sh {} +
+
+# Install liftOver
+# https://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/liftOver
+
+# Install Salmon
+WORKDIR /usr/local/lib
+RUN wget https://github.com/COMBINE-lab/salmon/archive/refs/tags/v1.10.1.tar.gz
+RUN tar xzvf v1.10.1.tar.gz
 
 
 

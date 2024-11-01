@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Mount s3 bucket in /home/ubuntu/mnt/jaimemain/
+echo "Mounting s3 bucket jaimemain at /home/ubuntu/mnt/jaimemain mountpoint."
+s3fs jaimemain /home/ubuntu/mnt/jaimemain
+
+
+
 # Define your volumes to check
 volumes=("/dev/nvme1n1" "/dev/nvme2n1") # Add more as needed, adjust as per your setup
 mount_base="/data"
