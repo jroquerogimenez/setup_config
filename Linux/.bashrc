@@ -1,3 +1,4 @@
+[ -z "$PS1" ] && source /etc/profile.d/dlami.sh
 # ~/.bashrc: executed by bash(1) for non-login shells.
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
@@ -8,16 +9,29 @@ case $- in
       *) return;;
 esac
 
-# don't put duplicate lines or lines starting with space in the history.
-# See bash(1) for more options
-HISTCONTROL=ignoreboth
 
-# append to the history file, don't overwrite it
+
+##########
+# HISTORY
+##########
+
+# Set history file location
+export HISTFILE="$HOME/.bash_history"
+
+# Set the maximum number of lines contained in the history file
+export HISTSIZE=5000000
+
+# Set the number of commands to remember in the command history (the history list)
+export HISTFILESIZE=5000000
+    
+# Combine both ignoredups and ignorespace in HISTCONTROL
+export HISTCONTROL=ignoreboth:erasedups
+
+# Share history between all sessions
 shopt -s histappend
+PROMPT_COMMAND="history -n; history -w; history -c; history -r; $PROMPT_COMMAND"
 
-# for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
-HISTSIZE=1000
-HISTFILESIZE=2000
+
 
 # check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.
@@ -87,14 +101,6 @@ fi
 # colored GCC warnings and errors
 #export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
-# some more ls aliases
-alias lsa='ls -AlFh'
-alias lsr='ls -AlFRh'
-
-# Add an "alert" alias for long running commands.  Use like so:
-#   sleep 10; alert
-alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
-
 # Alias definitions.
 # You may want to put all your additions into a separate file like
 # ~/.bash_aliases, instead of adding them here directly.
@@ -121,39 +127,6 @@ command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
 
 export PATH="/home/ubuntu/.local/bin:$PATH"
-export CVXOPT_BUILD_GLPK=1
-export CVXOPT_GLPK_LIB_DIR="/usr/local/lib"
-export CVXOPT_GLPK_INC_DIR="/usr/local/include"
 
-##########
-# HISTORY
-##########
-
-# Set history file location
-export HISTFILE="$HOME/.bash_history"
-
-# Set the maximum number of lines contained in the history file
-export HISTSIZE=50000
-
-# Set the number of commands to remember in the command history (the history list)
-export HISTFILESIZE=50000
-
-# Append to the history file, don't overwrite it
-shopt -s histappend
-
-# Record each line as it gets issued
-PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
-
-# Ignore duplicate commands
-export HISTCONTROL=ignoredups
-
-# Ignore commands that start with a space
-export HISTCONTROL=ignoreboth
-
-# Combine both ignoredups and ignorespace in HISTCONTROL
-export HISTCONTROL=ignoreboth:erasedups
-
-# Share history between all sessions
-shopt -s histappend
-PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
+PROMPT_COMMAND='echo -ne "\033]0;$PWD\007"'
 

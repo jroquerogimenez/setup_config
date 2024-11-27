@@ -1,0 +1,9 @@
+.vscode/
+.mypy_cache/
+.venv/
+.pytest_cache/
+**/.ipynb_checkpoints/
+**/__pycache__/
+**/.DS_Store
+*.swp
+*.log

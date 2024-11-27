@@ -1,0 +1,90 @@
+FROM 677993236947.dkr.ecr.us-east-1.amazonaws.com/rgtech_repository/main_repo:0.1.1
+
+LABEL authors="Jaime Roquero Gimenez" \
+    description="Compbio image for RGTechnologies."
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+    ncbi-blast+ \
+    bwa \
+    bowtie2 \
+    && apt-get clean -y && rm -rf /var/lib/apt/lists/*
+
+## Install Nextflow
+
+WORKDIR /usr/local/bin/
+RUN curl -s https://get.nextflow.io | bash
+RUN chmod 755 nextflow
+
+## Install samtools
+
+WORKDIR /usr/local/lib
+RUN wget https://github.com/samtools/samtools/releases/download/1.21/samtools-1.21.tar.bz2
+RUN tar -xvf samtools-1.21.tar.bz2 && rm samtools-1.21.tar.bz2
+WORKDIR /usr/local/lib/samtools-1.21
+RUN ./configure --prefix=/usr/local/
+RUN make
+RUN make install
+
+# Install bioawk
+
+WORKDIR /usr/local/lib
+RUN git clone https://github.com/lh3/bioawk.git
+WORKDIR /usr/local/lib/bioawk
+RUN make
+RUN ln -s /usr/local/lib/bioawk/bioawk /usr/local/bin
+
+# Install Bedtools
+
+WORKDIR /usr/local/bin
+RUN wget https://github.com/arq5x/bedtools2/releases/download/v2.31.0/bedtools.static
+RUN mv bedtools.static bedtools
+RUN chmod 755 /usr/local/bin/bedtools
+
+# Install splash
+WORKDIR /usr/local/bin
+RUN curl -L https://github.com/refresh-bio/SPLASH/releases/download/v2.1.4/splash-2.1.4.linux.x64.tar.gz | tar xz
+
+# Install UCSC toolkit
+
+WORKDIR /usr/local/bin
+RUN rsync -aP rsync://hgdownload.soe.ucsc.edu/genome/admin/exe/linux.x86_64/ ./
+
+
+
+# Install STAR
+
+# Actually there are already compiled binary files.
+WORKDIR /usr/local/lib
+RUN wget https://github.com/alexdobin/STAR/archive/2.7.11b.tar.gz
+RUN tar -xzf 2.7.11b.tar.gz
+WORKDIR /usr/local/lib/STAR-2.7.11b/source
+RUN make STAR
+
+# Install NCBI datasets CLI tool.
+WORKDIR /usr/local/lib
+RUN curl -o datasets 'https://ftp.ncbi.nlm.nih.gov/pub/datasets/command-line/v2/linux-amd64/datasets'
+RUN curl -o dataformat 'https://ftp.ncbi.nlm.nih.gov/pub/datasets/command-line/v2/linux-amd64/dataformat'
+RUN chmod +x datasets dataformat
+
+# Update Java JDK
+WORKDIR /usr/local/lib
+RUN wget https://download.oracle.com/java/23/latest/jdk-23_linux-x64_bin.tar.gz
+RUN tar -xzf jdk-23_linux-x64_bin.tar.gz
+RUN find jdk-23.0.1/bin/ -maxdepth 1 -type f -executable -exec ln -s {} /usr/local/bin/ \;
+RUN hash -d java
+
+# Install Picard tools
+WORKDIR /usr/local/lib
+RUN git clone https://github.com/broadinstitute/picard.git
+WORKDIR /usr/local/lib/picard
+RUN ./gradlew shadowJar
+RUN ln -s /usr/local/lib/picard/build/libs/picard.jar /usr/local/bin
+RUN chmod 755 /usr/local/bin/picard.jar
+RUN sh -c 'echo "#!/bin/bash\n java -jar /usr/local/bin/picard.jar \$@"> picard_executable'
+RUN mv picard_executable /usr/local/bin/picard
+RUN chmod 755 /usr/local/bin/picard
+
+
+# Clean up
+WORKDIR $HOME

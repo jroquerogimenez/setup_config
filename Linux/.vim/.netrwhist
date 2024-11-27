@@ -1,0 +1,10 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhist_cnt =8
+let g:netrw_dirhist_1='/home/ubuntu/MLModelPipeline/conf'
+let g:netrw_dirhist_2='/home/ubuntu/MLModelPipeline/schemas'
+let g:netrw_dirhist_3='/home/ubuntu/Specificity-calibration/src/pyspectune/utils'
+let g:netrw_dirhist_4='/home/ubuntu/MLModelInventory/modules/models/bPrescient'
+let g:netrw_dirhist_5='/home/ubuntu/code_tutorials/PERSONAL'
+let g:netrw_dirhist_6='/home/ubuntu/MLModelPipeline'
+let g:netrw_dirhist_7='/home/ubuntu/code_tutorials/PERSONAL/aws'
+let g:netrw_dirhist_8='/home/ubuntu/Nextflow_scripts'

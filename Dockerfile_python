@@ -1,0 +1,49 @@
+FROM 677993236947.dkr.ecr.us-east-1.amazonaws.com/rgtech_repository/main_repo:0.1.2
+
+LABEL authors="Jaime Roquero Gimenez" \
+    description="Python image for RGTechnologies."
+
+
+# # Install AWS CLI
+
+WORKDIR /usr/local/lib
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+RUN unzip awscliv2.zip && rm awscliv2.zip
+RUN ./aws/install
+
+# Install pyenv
+
+RUN curl https://pyenv.run | bash
+RUN echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc
+RUN echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
+RUN echo 'eval "$(pyenv init -)"' >> ~/.bashrc
+ENV PYENV_ROOT="$HOME/.pyenv"
+ENV PATH="$PYENV_ROOT/bin:$PATH"
+RUN pyenv init -
+RUN pyenv install 3.12.7
+RUN pyenv global 3.12.7
+
+# Install personal setup
+WORKDIR $HOME
+RUN git clone https://github.com/jroquerogimenez/setup_config.git
+RUN cp -rT $HOME/setup_config/Linux $HOME/
+
+# Install Poetry
+
+RUN curl -sSL https://install.python-poetry.org | POETRY_VERSION=1.8.0 /home/ubuntu/.pyenv/shims/python - --yes
+ENV PATH="$HOME/.local/bin:$PATH"
+RUN poetry config virtualenvs.in-project true
+WORKDIR $HOME/workspace
+RUN mkdir workspace && mv $HOME/pyproject.toml $HOME/workspace/
+RUN poetry env use $HOME/.pyenv/shims/python
+RUN poetry install
+
+
+
+# Clean up
+
+WORKDIR $HOME
+
+RUN cd /home \
+    mkdir matplotlib_tmp
+ENV MPLCONFIGDIR="/home/matplotlib_tmp/"

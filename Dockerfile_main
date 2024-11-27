@@ -1,0 +1,81 @@
+FROM ubuntu:22.04
+
+LABEL authors="Jaime Roquero Gimenez" \
+    description="Base docker image for RGTechnologies."
+
+
+ENV LC_ALL en_US.UTF-8
+ENV LANGUAGE en_US.UTF-8
+ENV LANG en_US.UTF-8
+
+ENV DEBIAN_FRONTEND noninteractive
+
+
+ARG BUILD_VER=0.0
+ARG GIT_BRANCH="master"
+ENV GIT_BRANCH="${GIT_BRANCH}"
+ENV BUILD_VER="${BUILD_VER}"
+
+
+# Set one or more  labels
+LABEL version="${BUILD_VER}"
+
+# Install basic OS tools on top of ubuntu to facilitate next steps
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+    apt-utils \
+    apt-transport-https \
+    bison \
+    byacc \
+    build-essential \
+    ca-certificates \
+    cmake \
+    curl \
+    default-jdk \
+    default-jre \
+    ed \
+    gfortran \
+    git \
+    gnupg1 \
+    gnupg2 \
+    graphviz \
+    gzip \
+    less \
+    libbz2-dev \
+    libboost-all-dev \
+    libcurl4-openssl-dev \
+    libffi-dev \
+    liblzma-dev \
+    libncurses5-dev \
+    libpcre2-dev \
+    libreadline8 \
+    libreadline-dev \
+    libsqlite3-dev \
+    libssl-dev \
+    libxmlsec1-dev \
+    libxml2-dev \
+    libz-dev \
+    littler \
+    llvm \
+    locales \
+    make \
+    nano \
+    procps \
+    python3-dev \
+    rsync \
+    s3fs \
+    ssh \
+    tk-dev \
+    unzip \
+    vim \
+    wget \
+    xz-utils \
+    zlib1g-dev \
+    && apt-get clean -y && rm -rf /var/lib/apt/lists/*
+
+## Configure default locale, see https://github.com/rocker-org/rocker/issues/19
+RUN echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
+    && locale-gen en_US.utf8 \
+    && /usr/sbin/update-locale LANG=en_US.UTF-8
+
+ENV HOME /home/ubuntu
