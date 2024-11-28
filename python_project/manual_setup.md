@@ -1,4 +1,4 @@
-poetry config virtualenvs.in-project true
+poetry
 poetry install --no-root
 poetry shell
 

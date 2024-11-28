@@ -23,6 +23,8 @@ pyenv global 3.12.7
 
 ```
 curl -sSL https://install.python-poetry.org | POETRY_VERSION=1.8.0 /home/ubuntu/.pyenv/shims/python - --yes
+
+poetry config virtualenvs.in-project true
 ```
 
 ## Git setup

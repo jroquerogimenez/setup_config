@@ -9,3 +9,4 @@ aws ecr get-login-password --region us-east-1 | docker login --username AWS --pa
 mkdir -p /home/ubuntu/mnt/jaimemain
 
 s3fs jaimemain /home/ubuntu/mnt/jaimemain
+
