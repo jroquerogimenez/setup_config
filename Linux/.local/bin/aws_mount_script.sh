@@ -1,10 +1,5 @@
 #!/bin/bash
 
-# Mount s3 bucket in /home/ubuntu/mnt/jaimemain/
-echo "Mounting s3 bucket jaimemain at /home/ubuntu/mnt/jaimemain mountpoint."
-s3fs jaimemain /home/ubuntu/mnt/jaimemain
-
-
 
 # Define your volumes to check
 volumes=("/dev/nvme1n1" "/dev/nvme2n1") # Add more as needed, adjust as per your setup
@@ -42,8 +37,6 @@ check_filesystem_lsblk() {
 mount_volume() {
     local volume=$1
     local mount_point=$2
-    echo "Creating filesystem on ${volume}."
-    sudo mkfs -t $filesystem $volume
     echo "Mounting ${volume} to ${mount_point}."
     sudo mkdir -p $mount_point
     sudo mount $volume $mount_point
@@ -58,16 +51,16 @@ for i in "${!volumes[@]}"; do
     if lsblk -f | grep -q "^$(basename $volume)"; then
         # Perform both checks
         if check_filesystem_file $volume && check_filesystem_lsblk $volume; then
-            # Determine mount point
-            if [ $i -eq 0 ]; then
-                mount_point=$mount_base
-            else
-                mount_point="${mount_base}_$((i+1))"
-            fi
-            mount_volume $volume $mount_point
-        else
-            echo "Skipping $volume as it already has a filesystem or the check failed."
+            echo "Creating filesystem on ${volume}."
+            sudo mkfs -t $filesystem $volume
         fi
+        # Determine mount point
+        if [ $i -eq 0 ]; then
+            mount_point=$mount_base
+        else
+            mount_point="${mount_base}_$((i+1))"
+        fi
+        mount_volume $volume $mount_point
     else
         echo "Volume $volume not found, skipping."
     fi

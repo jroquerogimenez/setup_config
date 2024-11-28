@@ -121,11 +121,12 @@ if ! shopt -oq posix; then
   fi
 fi
 
-
+# Add pyenv
 export PYENV_ROOT="$HOME/.pyenv"
 command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
 
+# Add poetry
 export PATH="/home/ubuntu/.local/bin:$PATH"
 
 PROMPT_COMMAND='echo -ne "\033]0;$PWD\007"'
