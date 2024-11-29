@@ -1,25 +1,14 @@
 ## Move all contents of Linux into the home directory and replace vscode by .vscode
 
-mv $HOME/setup_config/Linux/\* $HOME/
+mv $HOME/setup_config/Linux/* $HOME/
 mv $HOME/vscode $HOME/.vscode
 
-sed "s|{SCRIPT_PATH}|$HOME/.local/bin/startup_script.sh|" "$HOME/setup_config/systemd_files/startup_script.service.template" > "$HOME/setup_config/systemd_files/startup_script.service"
-sed "s|{SCRIPT_PATH}|$HOME/.local/bin/aws_mount_script.sh|" "$HOME/setup_config/systemd_files/aws_mount_script.service.template" > "$HOME/setup_config/systemd_files/aws_mount_script.service"
-
-sudo mv $HOME/setup_config/systemd_files/startup_script.service /etc/systemd/system/
-sudo mv $HOME/setup_config/systemd_files/aws_mount_script.service /etc/systemd/system/
-
-sudo chown root:root $HOME/.local/bin/startup_script.sh
-sudo chown root:root $HOME/.local/bin/aws_mount_script.sh
-sudo chmod 700 $HOME/.local/bin/startup_script.sh
-sudo chmod 700 $HOME/.local/bin/aws_mount_script.sh
-
-sudo systemctl daemon-reload
-sudo systemctl enable startup_script.service
+sudo bash $HOME/.local/bin/home_mount_startup.sh
+sudo bash $HOME/.local/bin/setup_services_startup.sh
 
 ## Install linux packages
 
-bash $HOME/.local/bin/linux_software.sh
+sudo bash $HOME/.local/bin/linux_software_startup.sh
 
 ## Install pyenv
 
@@ -82,14 +71,3 @@ openssl req -x509 -noenc -days 365 -newkey rsa:2048 -keyout $HOME/.ssl/mykey.key
 ## VSCode setup
 
 xargs -I {} code --install-extension {} < $HOME/.vscode/extensions.txt
-
-## Create Cron jobs at startup
-
-Edit the sudo crontab
-
-sudo chmod +x $HOME/.local/bin/aws_mount_script.sh
-sudo chmod +x $HOME/.local/bin/aws_mount_script.sh
-sudo crontab -e
-
-@reboot /home/ubuntu/.local/bin/aws_mount_script.sh >> /var/log/aws_mount_script.log 2>&1
-@reboot /home/ubuntu/.local/bin/startup_script.sh >> /var/log/startup_script.log 2>&1
