@@ -1,0 +1,21 @@
+[Unit]
+Description=AWS Mount Script
+After=startup_script.service network-online.target
+Wants=network-online.target
+Requires=startup_script.service
+StartLimitIntervalSec=600
+StartLimitBurst=5
+
+[Service]
+Type=oneshot
+ExecStartPre=/bin/sleep 5
+ExecStart={SCRIPT_PATH}
+TimeoutStartSec=60
+RemainAfterExit=yes
+Restart=on-failure
+RestartSec=30
+StandardOutput=append:/var/log/aws_mount_script.log
+StandardError=inherit
+
+[Install]
+WantedBy=multi-user.target

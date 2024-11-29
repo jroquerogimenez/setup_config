@@ -1,0 +1,20 @@
+[Unit]
+Description=Startup Script
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=600
+StartLimitBurst=5
+
+[Service]
+Type=oneshot
+ExecStartPre=/bin/sleep 5
+ExecStart={SCRIPT_PATH}
+TimeoutStartSec=60
+RemainAfterExit=yes
+Restart=on-failure
+RestartSec=30
+StandardOutput=append:/var/log/startup_script.log
+StandardError=inherit
+
+[Install]
+WantedBy=multi-user.target
