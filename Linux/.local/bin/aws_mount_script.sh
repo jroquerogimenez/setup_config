@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Configuration
-volumes=("/dev/nvme1n1" "/dev/nvme2n1") # Adjust as per your setup
+volumes=("/dev/nvme1n1" "/dev/nvme2n1" "/dev/nvme3n1") # Adjust as per your setup
 mount_base="/data"
 owner="ubuntu"
 filesystem="xfs"
@@ -28,8 +28,13 @@ fi
 # Function to check if a volume is already mounted
 check_if_mounted() {
     local volume=$1
-    if mount | grep -q "^$volume "; then
-        echo "Error: Volume $volume is already mounted. Skipping."
+    local mnt_point
+
+    # Extract the mount point if the volume is mounted
+    mnt_point=$(mount | awk -v vol="$volume" '$1 == vol {print $3}')
+    
+    if [ -n "$mnt_point" ]; then
+        echo "Error: Volume $volume is already mounted on $mnt_point. Skipping."
         return 1
     fi
     return 0
