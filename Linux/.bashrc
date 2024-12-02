@@ -1,4 +1,3 @@
-[ -z "$PS1" ] && source /etc/profile.d/dlami.sh
 # ~/.bashrc: executed by bash(1) for non-login shells.
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
@@ -9,7 +8,7 @@ case $- in
       *) return;;
 esac
 
-
+PROMPT_COMMAND='echo -ne "\033]0;$PWD\007"'
 
 ##########
 # HISTORY
@@ -19,13 +18,19 @@ esac
 export HISTFILE="$HOME/.bash_history"
 
 # Set the maximum number of lines contained in the history file
-export HISTSIZE=5000000
+export HISTSIZE=1000000
 
 # Set the number of commands to remember in the command history (the history list)
-export HISTFILESIZE=5000000
+export HISTFILESIZE=2000000
     
 # Combine both ignoredups and ignorespace in HISTCONTROL
 export HISTCONTROL=ignoreboth:erasedups
+
+# Ignore trivial commands
+export HISTIGNORE="ls:la:ll:l:cd:pwd"
+
+# Add timestamps
+export HISTTIMEFORMAT="%F %T "
 
 # Share history between all sessions
 shopt -s histappend
@@ -89,13 +94,6 @@ esac
 # enable color support of ls and also add handy aliases
 if [ -x /usr/bin/dircolors ]; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
-    alias ls='ls --color=auto'
-    #alias dir='dir --color=auto'
-    #alias vdir='vdir --color=auto'
-
-    alias grep='grep --color=auto'
-    alias fgrep='fgrep --color=auto'
-    alias egrep='egrep --color=auto'
 fi
 
 # colored GCC warnings and errors
@@ -129,5 +127,5 @@ eval "$(pyenv init -)"
 # Add poetry
 export PATH="/home/ubuntu/.local/bin:$PATH"
 
-PROMPT_COMMAND='echo -ne "\033]0;$PWD\007"'
+
 

@@ -173,6 +173,15 @@ install_vscode_extensions() {
     fi
 }
 
+
+
+mv $HOME/setup_config/Linux/* $HOME/
+
+sudo bash $HOME/.local/bin/home_mount_startup.sh
+sudo bash $HOME/.local/bin/setup_services_startup.sh
+sudo bash $HOME/.local/bin/linux_software_startup.sh
+
+
 # Main script execution.
 install_pyenv
 install_python
