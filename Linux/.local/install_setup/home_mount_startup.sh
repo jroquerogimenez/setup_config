@@ -3,6 +3,10 @@
 # Exit immediately if a command exits with a non-zero status.
 set -euo pipefail
 
+
+# This script checks if device /dev/nvme1n1 is present, and mounts it in /home/ubuntu
+# It updates the fstab file so that this mount is automatically done.
+
 # Variables
 DEVICE="/dev/nvme1n1"
 MOUNT_POINT="/home/ubuntu"
@@ -13,7 +17,7 @@ LOG_FILE="/var/log/ebs_mount.log"
 
 # Function to log messages with timestamps
 log() {
-    echo "$(date '+%Y-%m-%d %H:%M:%S') $1" | tee -a "$LOG_FILE"
+    echo "$(date '+%Y-%m-%d %H:%M:%S') $1"
 }
 
 # Redirect all output and errors to the log file
@@ -49,7 +53,7 @@ check_filesystem_lsblk() {
 }
 
 # Step 0: Check if the DEVICE corresponds to an attached volume.
-if ! lsblk | grep -q "$DEVICE"; then
+if ! lsblk -o NAME | grep -q "^${DEVICE#/dev/}"; then
     log "$DEVICE not found. Exiting script"
     exit 1
 fi

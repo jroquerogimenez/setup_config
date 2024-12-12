@@ -4,26 +4,33 @@
 set -euo pipefail
 
 # Configuration
-volumes=("/dev/nvme1n1" "/dev/nvme2n1" "/dev/nvme3n1") # Adjust as per your setup
+volumes=("/dev/nvme2n1" "/dev/nvme3n1" "/dev/nvme1n1") # Adjust as per your setup / nvme1n1 already mounted in home.
 mount_base="/data"
 owner="ubuntu"
 filesystem="xfs"
 log_file="/var/log/volume_mount.log"
 
-# Set up logging
-exec > >(tee -a "$log_file") 2>&1
-echo "Script started: $(date)"
+# Function to log messages with timestamps
+log() {
+    echo "$(date '+%Y-%m-%d %H:%M:%S') $1"
+}
+
+# Redirect all output and errors to the log file
+exec > >(tee -a "$LOG_FILE") 2>&1
+
+# Start of the script
+log "===== Starting mount service Script ====="
 
 # Validate inputs
 if [ -z "$mount_base" ]; then
-    echo "Error: mount_base is not defined. Exiting."
+    log "Error: mount_base is not defined. Exiting."
     exit 1
 fi
 
 if [ ! -d "$mount_base" ]; then
-    echo "Creating base mount directory: $mount_base"
+    log "Creating base mount directory: $mount_base"
     if ! sudo mkdir -p "$mount_base"; then
-        echo "Error: Failed to create mount_base directory. Exiting."
+        log "Error: Failed to create mount_base directory. Exiting."
         exit 1
     fi
 fi
@@ -37,7 +44,7 @@ check_if_mounted() {
     mnt_point=$(mount | awk -v vol="$volume" '$1 == vol {print $3}')
     
     if [ -n "$mnt_point" ]; then
-        echo "Error: Volume $volume is already mounted on $mnt_point. Skipping."
+        log "Error: Volume $volume is already mounted on $mnt_point. Skipping."
         return 1
     fi
     return 0
@@ -48,10 +55,10 @@ check_filesystem_file() {
     local volume=$1
     file_output=$(sudo file -s "$volume")
     if [[ $file_output == *": data" ]]; then
-        echo "No filesystem on $volume according to file -s."
+        log "No filesystem on $volume according to file -s."
         return 0 # Success, indicates no filesystem
     else
-        echo "Filesystem detected on $volume according to file -s: $file_output"
+        log "Filesystem detected on $volume according to file -s: $file_output"
         return 1 # Failure, indicates filesystem exists
     fi
 }
@@ -61,10 +68,10 @@ check_filesystem_lsblk() {
     local volume=$1
     fs_type=$(lsblk -no FSTYPE "$volume")
     if [ -z "$fs_type" ]; then
-        echo "No filesystem on $volume according to lsblk."
+        log "No filesystem on $volume according to lsblk."
         return 0 # Success, indicates no filesystem
     else
-        echo "Filesystem detected on $volume according to lsblk: $fs_type"
+        log "Filesystem detected on $volume according to lsblk: $fs_type"
         return 1 # Failure, indicates filesystem exists
     fi
 }
@@ -73,20 +80,20 @@ check_filesystem_lsblk() {
 mount_volume() {
     local volume=$1
     local mount_point=$2
-    echo "Mounting $volume to $mount_point."
+    log "Mounting $volume to $mount_point."
     if ! sudo mkdir -p "$mount_point"; then
-        echo "Error: Failed to create mount point $mount_point."
+        log "Error: Failed to create mount point $mount_point."
         return 1
     fi
 
     if ! sudo mount "$volume" "$mount_point"; then
-        echo "Error: Failed to mount $volume to $mount_point."
+        log "Error: Failed to mount $volume to $mount_point."
         return 1
     fi
 
-    echo "Changing owner of $mount_point to $owner."
+    log "Changing owner of $mount_point to $owner."
     if ! sudo chown -R "$owner:" "$mount_point"; then
-        echo "Error: Failed to change ownership of $mount_point."
+        log "Error: Failed to change ownership of $mount_point."
         return 1
     fi
     return 0
@@ -97,11 +104,11 @@ for volume in "${volumes[@]}"; do
     device_name=$(basename "$volume")
     mount_point="${mount_base}/${device_name}"
 
-    echo "Processing volume: $volume"
+    log "Processing volume: $volume"
 
     # Ensure the volume exists
     if ! lsblk -no NAME "$volume" > /dev/null 2>&1; then
-        echo "Error: Volume $volume not found. Skipping."
+        log "Error: Volume $volume not found. Skipping."
         continue
     fi
 
@@ -112,18 +119,18 @@ for volume in "${volumes[@]}"; do
 
     # Check for existing filesystem
     if check_filesystem_file "$volume" && check_filesystem_lsblk "$volume"; then
-        echo "Creating filesystem on $volume."
+        log "Creating filesystem on $volume."
         if ! sudo mkfs -t "$filesystem" "$volume"; then
-            echo "Error: Failed to create filesystem on $volume. Skipping."
+            log "Error: Failed to create filesystem on $volume. Skipping."
             continue
         fi
     fi
 
     # Mount the volume
     if ! mount_volume "$volume" "$mount_point"; then
-        echo "Error: Failed to mount $volume. Skipping."
+        log "Error: Failed to mount $volume. Skipping."
         continue
     fi
 done
 
-echo "All specified volumes processed. Script completed: $(date)"
+log "===== All specified volumes processed. Script completed. ====="

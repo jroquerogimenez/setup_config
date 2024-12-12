@@ -22,7 +22,7 @@ AWS_MOUNT_SERVICE="$HOME_DIR/.local/systemd_files/aws_mount_script.service"
 
 # Function to log messages with timestamps
 log() {
-    echo "$(date '+%Y-%m-%d %H:%M:%S') $1" | tee -a "$LOG_FILE"
+    echo "$(date '+%Y-%m-%d %H:%M:%S') $1"
 }
 
 # Redirect all output and errors to the log file
