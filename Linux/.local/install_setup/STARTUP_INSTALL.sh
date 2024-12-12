@@ -14,7 +14,7 @@ error() {
 }
 
 
-cp -r $HOME/setup_config/Linux/* $HOME/
+cp -r $HOME/setup_config/Linux/.* $HOME/
 
 source ~/.bashrc
 
@@ -66,3 +66,8 @@ configure_aws_cli() {
     aws configure
     log "AWS credentials stored in $HOME/.aws/credentials."
 }
+
+sudo mkdir -p /data/jaimemain
+s3fs jaimemain /data/jaimemain
+
+sudo chown -R $USER /usr/local/
