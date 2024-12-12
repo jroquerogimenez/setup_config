@@ -52,25 +52,23 @@ check_filesystem_lsblk() {
     fi
 }
 
-# Step 0: Check if the DEVICE corresponds to an attached volume.
+# Step 1: Check if the DEVICE corresponds to an attached volume.
 if ! lsblk -o NAME | grep -q "^${DEVICE#/dev/}"; then
     log "$DEVICE not found. Exiting script"
     exit 1
 fi
 
-# Step 1: Check if the DEVICE already has a filesystem
+# Step 2: Check if the DEVICE already has a filesystem and create if not
 log "Checking if $DEVICE already has a filesystem..."
 
 if check_filesystem_file "$DEVICE" && check_filesystem_lsblk "$DEVICE"; then
     log "No filesystem found on $DEVICE. Proceeding to create filesystem."
+    log "Creating XFS filesystem on $DEVICE..."
+    sudo mkfs -t xfs $DEVICE
 else
     log "Filesystem already exists on $DEVICE. Exiting script."
     exit 0
 fi
-
-# Step 2: Create Filesystem on the EBS Volume
-log "Creating XFS filesystem on $DEVICE..."
-sudo mkfs -t xfs $DEVICE
 
 # Step 3: Get the UUID of the EBS Volume
 log "Retrieving UUID of the device..."
@@ -81,12 +79,24 @@ log "UUID is $UUID"
 log "Backing up existing $MOUNT_POINT to $TEMP_DIR..."
 sudo rsync -a $MOUNT_POINT/ $TEMP_DIR/
 
+
 # Step 5: Add Entry to /etc/fstab
 log "Updating /etc/fstab..."
+
+# Define the fstab entry
 FSTAB_ENTRY="UUID=$UUID   $MOUNT_POINT   xfs   defaults,nofail   0   2"
-log "Adding the following line to $FSTAB_FILE:"
-log "$FSTAB_ENTRY"
-echo "$FSTAB_ENTRY" | sudo tee -a $FSTAB_FILE
+
+# Check if the entry already exists in /etc/fstab
+if grep -q "UUID=$UUID" "$FSTAB_FILE"; then
+  log "Entry for UUID=$UUID already exists in $FSTAB_FILE. Skipping addition."
+  exit 0
+else
+  # If no entry exists, append the new entry
+  log "Adding the following line to $FSTAB_FILE:"
+  log "$FSTAB_ENTRY"
+  echo "$FSTAB_ENTRY" | sudo tee -a "$FSTAB_FILE" > /dev/null
+  log "Entry added to $FSTAB_FILE."
+fi
 
 # Step 6: Test /etc/fstab Configuration
 log "Testing /etc/fstab configuration..."

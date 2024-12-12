@@ -8,11 +8,6 @@ log() {
     echo "$(date +"%Y-%m-%d %H:%M:%S") [LOG] $1"
 }
 
-# Function to print error messages.
-error() {
-    echo "$(date +"%Y-%m-%d %H:%M:%S") [ERROR] $1" >&2
-}
-
 
 cp -r $HOME/setup_config/Linux/.* $HOME/
 
