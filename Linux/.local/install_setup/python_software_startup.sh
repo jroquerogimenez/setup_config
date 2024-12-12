@@ -33,7 +33,7 @@ install_pyenv() {
         # echo 'eval "$(pyenv init -)"' >> ~/.bashrc
 
         # Source the updated .bashrc.
-        source ~/.bashrc
+        source /home/ubuntu/.bashrc
         log "pyenv installed and shell configuration updated."
     fi
 }
@@ -41,7 +41,7 @@ install_pyenv() {
 # Function to install a specific Python version using pyenv.
 install_python() {
     PYTHON_VERSION=3.12.7
-    source ~/.bashrc
+    source /home/ubuntu/.bashrc
     log "Installing Python $PYTHON_VERSION using pyenv..."
     if pyenv versions | grep -q $PYTHON_VERSION; then
         log "Python $PYTHON_VERSION is already installed."

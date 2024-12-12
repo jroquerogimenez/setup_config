@@ -21,7 +21,7 @@ source ~/.bashrc
 sudo bash $HOME/.local/install_setup/home_mount_startup.sh
 sudo bash $HOME/.local/install_setup/setup_services_startup.sh
 sudo bash $HOME/.local/install_setup/linux_software_startup.sh
-sudo bash $HOME/.local/install_setup/python_software_startup.sh
+bash $HOME/.local/install_setup/python_software_startup.sh
 
 
 log "Setup completed successfully."
