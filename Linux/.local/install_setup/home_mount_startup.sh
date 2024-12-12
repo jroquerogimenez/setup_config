@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Exit immediately if a command exits with a non-zero status.
-set -e
+set -euo pipefail
 
 # Variables
 DEVICE="/dev/nvme1n1"
@@ -47,6 +47,12 @@ check_filesystem_lsblk() {
         return 1 # Failure, indicates filesystem exists
     fi
 }
+
+# Step 0: Check if the DEVICE corresponds to an attached volume.
+if ! lsblk | grep -q "$DEVICE"; then
+    log "$DEVICE not found. Exiting script"
+    exit 1
+fi
 
 # Step 1: Check if the DEVICE already has a filesystem
 log "Checking if $DEVICE already has a filesystem..."

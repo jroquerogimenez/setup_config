@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Exit immediately if a command exits with a non-zero status.
-set -e
+set -euo pipefail
 
 # Logging function to print messages with timestamp.
 log() {
@@ -175,11 +175,13 @@ install_vscode_extensions() {
 
 
 
-mv $HOME/setup_config/Linux/* $HOME/
+mv $HOME/setup_config/Linux/.* $HOME/
 
-sudo bash $HOME/.local/bin/home_mount_startup.sh
-sudo bash $HOME/.local/bin/setup_services_startup.sh
-sudo bash $HOME/.local/bin/linux_software_startup.sh
+source ~/.bashrc
+
+sudo bash $HOME/.local/install_setup/home_mount_startup.sh
+sudo bash $HOME/.local/install_setup/setup_services_startup.sh
+sudo bash $HOME/.local/install_setup/linux_software_startup.sh
 
 
 # Main script execution.

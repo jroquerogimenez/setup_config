@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Exit immediately if a command exits with a non-zero status.
+set -euo pipefail
+
 sudo chmod 666 /var/run/docker.sock
 
 # Set variables

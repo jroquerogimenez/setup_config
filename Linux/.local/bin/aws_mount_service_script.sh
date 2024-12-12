@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Exit immediately if a command exits with a non-zero status.
+set -euo pipefail
+
 # Configuration
 volumes=("/dev/nvme1n1" "/dev/nvme2n1" "/dev/nvme3n1") # Adjust as per your setup
 mount_base="/data"

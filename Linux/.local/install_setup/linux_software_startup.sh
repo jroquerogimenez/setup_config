@@ -1,15 +1,30 @@
 #!/bin/bash
 
 # Exit immediately if a command exits with a non-zero status.
-set -e
+set -euo pipefail
 
-# Redirect output to a log file.
-exec > >(tee -i install.log)
-exec 2>&1
+# Variables
+LOG_FILE="/var/log/linux_software_install.log"
+
+
+
+
+
+
+# Function to log messages with timestamps
+log() {
+    echo "$(date '+%Y-%m-%d %H:%M:%S') $1" | tee -a "$LOG_FILE"
+}
+
+# Redirect all output and errors to the log file
+exec > >(tee -a "$LOG_FILE") 2>&1
+
+# Start of the script
+log "===== Starting Linux Software install Script ====="
 
 # Check for root privileges.
 if [ "$EUID" -ne 0 ]; then
-  echo "Please run as root."
+  log "Please run as root."
   exit 1
 fi
 
@@ -17,11 +32,11 @@ fi
 export DEBIAN_FRONTEND=noninteractive
 
 # Update package lists and upgrade installed packages.
-echo "Updating package lists and upgrading installed packages..."
+log "Updating package lists and upgrading installed packages..."
 sudo apt update && sudo apt upgrade -y
 
 # Install essential packages.
-echo "Installing essential packages..."
+log "Installing essential packages..."
 
 # Development tools
 sudo apt install -y --no-install-recommends \
@@ -94,11 +109,11 @@ sudo apt install -y --no-install-recommends \
     graphviz
 
 # Clean up
-echo "Cleaning up..."
+log "Cleaning up..."
 sudo apt autoremove -y
 sudo apt clean -y
 
 # Optionally, remove apt lists to save space (not recommended on regular systems)
 # sudo rm -rf /var/lib/apt/lists/*
 
-echo "Installation completed successfully."
+log "===== Linux Software install completed successfully. ====="
