@@ -23,6 +23,9 @@ log "Setup completed successfully."
 
 # Need to customize scripts in ~/.local/bin: aws_mount_service_script.sh and startup_service_script.sh
 
+ 
+# Install docker
+
 
 # Function to set up SSH keys.
 setup_ssh() {
