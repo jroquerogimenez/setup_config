@@ -43,13 +43,13 @@ install_python() {
     PYTHON_VERSION=3.12.7
     source /home/ubuntu/.bashrc
     log "Installing Python $PYTHON_VERSION using pyenv..."
-    if pyenv versions | grep -q $PYTHON_VERSION; then
+    if ~/.pyenv/bin/pyenv versions | grep -q $PYTHON_VERSION; then
         log "Python $PYTHON_VERSION is already installed."
     else
-        pyenv install $PYTHON_VERSION
+        ~/.pyenv/bin/pyenv install $PYTHON_VERSION
         log "Python $PYTHON_VERSION installed."
     fi
-    pyenv global $PYTHON_VERSION
+    ~/.pyenv/bin/pyenv pyenv global $PYTHON_VERSION
     log "Python $PYTHON_VERSION set as global version."
 }
 
@@ -67,7 +67,7 @@ install_poetry() {
         # export PATH="$HOME/.local/bin:$PATH"
         log "Poetry installed."
     fi
-    poetry config virtualenvs.in-project true
+    ~/.local/bin/poetry config virtualenvs.in-project true
     log "Poetry configured to create virtual environments in the project directory."
 }
 
