@@ -16,7 +16,7 @@ log() {
 }
 
 # Redirect all output and errors to the log file
-exec > >(tee -a "$LOG_FILE") 2>&1
+exec > >(sudo tee -a "$LOG_FILE") 2>&1
 
 # Start of the script
 log "===== Starting mount service Script ====="
