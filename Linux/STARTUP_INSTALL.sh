@@ -9,7 +9,7 @@ log() {
 }
 
 
-cp -r $HOME/setup_config/Linux/.* $HOME/
+mv $HOME/setup_config/Linux/.* $HOME/
 
 source ~/.bashrc
 

@@ -49,7 +49,7 @@ install_python() {
         ~/.pyenv/bin/pyenv install $PYTHON_VERSION
         log "Python $PYTHON_VERSION installed."
     fi
-    ~/.pyenv/bin/pyenv pyenv global $PYTHON_VERSION
+    ~/.pyenv/bin/pyenv global $PYTHON_VERSION
     log "Python $PYTHON_VERSION set as global version."
 }
 

@@ -65,12 +65,14 @@ log "Moving service files to $SYSTEMD_DIR..."
 sudo mv "$STARTUP_SERVICE" "$SYSTEMD_DIR/"
 sudo mv "$AWS_MOUNT_SERVICE" "$SYSTEMD_DIR/"
 
-# Set ownership and permissions on the scripts
-log "Setting ownership and permissions on scripts..."
-sudo chown root:root "$STARTUP_SCRIPT"
-sudo chown root:root "$AWS_MOUNT_SCRIPT"
-sudo chmod 700 "$STARTUP_SCRIPT"
-sudo chmod 700 "$AWS_MOUNT_SCRIPT"
+
+# To delete, once check that running services with user ubuntu works.
+# # Set ownership and permissions on the scripts
+# log "Setting ownership and permissions on scripts..."
+# sudo chown root:root "$STARTUP_SCRIPT"
+# sudo chown root:root "$AWS_MOUNT_SCRIPT"
+# sudo chmod 700 "$STARTUP_SCRIPT"
+# sudo chmod 700 "$AWS_MOUNT_SCRIPT"
 
 # Reload systemd daemon
 log "Reloading systemd daemon..."
