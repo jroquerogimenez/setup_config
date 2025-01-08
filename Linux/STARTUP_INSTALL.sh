@@ -22,13 +22,6 @@ bash $HOME/.local/install_setup/python_software_startup.sh
 
 log "Setup completed successfully."
 
-
-# Need to customize scripts in ~/.local/bin: aws_mount_service_script.sh and startup_service_script.sh
-
- 
-# Install docker
-
-
 # Function to configure Git.
 configure_git() {
     GIT_USER_NAME="Jaime Roquero"
@@ -53,6 +46,9 @@ configure_aws_cli() {
     aws configure
     log "AWS credentials stored in $HOME/.aws/credentials."
 }
+
+configure_git
+configure_aws_cli
 
 # sudo mkdir -p /data/jaimemain
 # s3fs jaimemain /data/jaimemain

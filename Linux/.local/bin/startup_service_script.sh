@@ -58,7 +58,7 @@ else
 fi
 
 
-
+log "===== Startup service script completed successfully. ====="
 
 
 

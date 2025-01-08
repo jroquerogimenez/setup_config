@@ -8,7 +8,7 @@ volumes=("/dev/nvme2n1" "/dev/nvme3n1" "/dev/nvme1n1") # Adjust as per your setu
 mount_base="/data"
 owner="ubuntu"
 filesystem="xfs"
-log_file="/var/log/volume_mount.log"
+LOG_FILE="/var/log/volume_mount.log"
 
 # Function to log messages with timestamps
 log() {
