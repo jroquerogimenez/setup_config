@@ -32,7 +32,7 @@ configure_git() {
     git config --global user.email "$GIT_USER_EMAIL"
     log "Git configured with user name and email."
 
-    cat "$SSH_KEY.pub"
+    cat "$HOME/.ssh/id_ed25519.pub"
     read -p "Press enter after uploading the SSH key to GitHub..."
     log "Attempting to connect to GitHub via SSH..."
     ssh -T git@github.com || true
@@ -43,7 +43,7 @@ configure_git() {
 # Function to configure AWS CLI.
 configure_aws_cli() {
     log "Configuring AWS CLI..."
-    aws configure
+    $HOME/.local/bin/aws configure
     log "AWS credentials stored in $HOME/.aws/credentials."
 }
 

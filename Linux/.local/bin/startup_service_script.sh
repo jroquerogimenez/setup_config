@@ -21,10 +21,10 @@ log "===== Starting startup service script ====="
 sudo chmod 666 /var/run/docker.sock
 
 # Set variables
-ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+ACCOUNT_ID=$("$HOME/.local/bin/aws" sts get-caller-identity --query Account --output text)
 
 # Get the list of all AWS regions
-regions=$(aws ec2 describe-regions --query "Regions[*].RegionName" --output text)
+regions=$("$HOME/.local/bin/aws" ec2 describe-regions --query "Regions[*].RegionName" --output text)
 
 # Initialize an empty list to store regions with ECR repositories
 ecr_regions=()
@@ -34,7 +34,7 @@ for region in $regions; do
   echo "Checking region: $region"
   
   # Attempt to describe ECR repositories in the region
-  ecr_repositories=$(aws ecr describe-repositories --region "$region" --registry-id "$ACCOUNT_ID" --output text)
+  ecr_repositories=$("$HOME/.local/bin/aws" ecr describe-repositories --region "$region" --registry-id "$ACCOUNT_ID" --output text)
 
   if [ -n "$ecr_repositories" ]; then
     echo "Found ECR repositories in region: $region"
@@ -50,7 +50,7 @@ if [ ${#ecr_regions[@]} -eq 1 ]; then
   ECR_URL="${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com"
 
   # Get ECR login password and log in to Docker
-  aws ecr get-login-password --region "$REGION" | \
+  "$HOME/.local/bin/aws" ecr get-login-password --region "$REGION" | \
   docker login --username AWS --password-stdin "$ECR_URL"
 
 else
