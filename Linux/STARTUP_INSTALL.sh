@@ -22,25 +22,11 @@ bash $HOME/.local/install_setup/python_software_startup.sh
 
 log "Setup completed successfully."
 
+
 # Need to customize scripts in ~/.local/bin: aws_mount_service_script.sh and startup_service_script.sh
 
  
 # Install docker
-
-
-# Function to set up SSH keys.
-setup_ssh() {
-    SSH_KEY="$HOME/.ssh/id_ed25519"
-    SSH_COMMENT="RGTechMain_GitHub"
-    log "Setting up SSH keys..."
-    if [ -f "$SSH_KEY" ]; then
-        log "SSH key already exists at $SSH_KEY."
-    else
-        ssh-keygen -t ed25519 -C "$SSH_COMMENT" -f "$SSH_KEY" -N ""
-        log "SSH key generated at $SSH_KEY."
-    fi
-    log "Please upload the public key to GitHub:"
-}
 
 
 # Function to configure Git.
@@ -61,24 +47,6 @@ configure_git() {
 
 
 
-# Function to install AWS CLI.
-install_aws_cli() {
-    log "Installing AWS CLI..."
-    if command -v aws >/dev/null 2>&1; then
-        log "AWS CLI is already installed."
-    else
-        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-        unzip awscliv2.zip
-        ./aws/install --install-dir $HOME/.local/lib/ --bin-dir $HOME/.local/bin/
-        rm -rf aws awscliv2.zip
-
-        # # Update PATH for the current session and future sessions.
-        # echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
-        # export PATH="$HOME/.local/bin:$PATH"
-        log "AWS CLI installed."
-    fi
-}
-
 # Function to configure AWS CLI.
 configure_aws_cli() {
     log "Configuring AWS CLI..."
@@ -86,7 +54,7 @@ configure_aws_cli() {
     log "AWS credentials stored in $HOME/.aws/credentials."
 }
 
-sudo mkdir -p /data/jaimemain
-s3fs jaimemain /data/jaimemain
+# sudo mkdir -p /data/jaimemain
+# s3fs jaimemain /data/jaimemain
 
-sudo chown -R $USER /usr/local/
+# sudo chown -R $USER /usr/local/

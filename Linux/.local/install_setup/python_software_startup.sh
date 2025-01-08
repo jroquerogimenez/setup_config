@@ -71,6 +71,24 @@ install_poetry() {
     log "Poetry configured to create virtual environments in the project directory."
 }
 
+# Function to install AWS CLI.
+install_aws_cli() {
+    log "Installing AWS CLI..."
+    if command -v aws >/dev/null 2>&1; then
+        log "AWS CLI is already installed."
+    else
+        mkdir -p $HOME/.local/tmp
+        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "$HOME/.local/tmp/awscliv2.zip"
+        unzip "$HOME/.local/tmp/awscliv2.zip" -d "$HOME/.local/tmp/"
+        $HOME/.local/tmp/aws/install --install-dir $HOME/.local/lib/ --bin-dir $HOME/.local/bin/
+        rm -rf $HOME/.local/tmp/aws "$HOME/.local/tmp/awscliv2.zip"
+
+        # # Update PATH for the current session and future sessions.
+        # echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+        # export PATH="$HOME/.local/bin:$PATH"
+        log "AWS CLI installed."
+    fi
+}
 
 # Function to prepare the mount point for AWS S3.
 prepare_mount_point() {
@@ -126,12 +144,76 @@ install_vscode_extensions() {
     fi
 }
 
+# Function to set up SSH keys.
+setup_ssh() {
+    SSH_KEY="$HOME/.ssh/id_ed25519"
+    SSH_COMMENT="RGTechMain_GitHub"
+    log "Setting up SSH keys..."
+    if [ -f "$SSH_KEY" ]; then
+        log "SSH key already exists at $SSH_KEY."
+    else
+        ssh-keygen -t ed25519 -C "$SSH_COMMENT" -f "$SSH_KEY" -N ""
+        log "SSH key generated at $SSH_KEY."
+    fi
+    log "Please upload the public key to GitHub:"
+}
+
+
+# Function to install Docker
+install_docker() {
+    log "Starting Docker installation process..."
+
+    # Check if Docker is already installed
+    if command -v docker >/dev/null 2>&1; then
+        log "Docker is already installed."
+        return 0
+    fi
+
+    # Update package lists
+    log "Updating package lists..."
+    sudo apt-get update -y
+
+    # Set up Docker's GPG key
+    log "Adding Docker's official GPG key..."
+    sudo install -m 0755 -d /etc/apt/keyrings
+    sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+    sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+    # Add Docker repository to apt sources
+    log "Adding Docker repository to apt sources..."
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] \
+    https://download.docker.com/linux/ubuntu \
+    $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+    sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+    # Update package lists again after adding the Docker repository
+    log "Updating package lists after adding Docker repository..."
+    sudo apt-get update -y
+
+    # Install Docker packages
+    log "Installing Docker packages..."
+    sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+    # Verify installation
+    if command -v docker >/dev/null 2>&1; then
+        log "Docker installation completed successfully."
+    else
+        log "Docker installation failed. Please check the logs and try again."
+        return 1
+    fi
+}
+
+
+
 # Main script execution.
 install_pyenv
 install_python
 install_poetry
+install_aws_cli
 prepare_mount_point
 generate_ssl_certificate
 install_vscode_extensions
+setup_ssh
+install_docker
 
 log "===== Python Software install completed successfully. ====="
