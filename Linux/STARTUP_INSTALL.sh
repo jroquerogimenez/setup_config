@@ -10,6 +10,7 @@ log() {
 
 
 mv $HOME/setup_config/Linux/.* $HOME/
+mv $HOME/setup_config/python_project/vscode $HOME/setup_config/python_project/.vscode
 
 source ~/.bashrc
 
@@ -56,6 +57,26 @@ configure_git() {
     read -p "Press enter after uploading the SSH key to GitHub..."
     log "Attempting to connect to GitHub via SSH..."
     ssh -T git@github.com || true
+}
+
+
+
+# Function to install AWS CLI.
+install_aws_cli() {
+    log "Installing AWS CLI..."
+    if command -v aws >/dev/null 2>&1; then
+        log "AWS CLI is already installed."
+    else
+        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+        unzip awscliv2.zip
+        ./aws/install --install-dir $HOME/.local/lib/ --bin-dir $HOME/.local/bin/
+        rm -rf aws awscliv2.zip
+
+        # # Update PATH for the current session and future sessions.
+        # echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+        # export PATH="$HOME/.local/bin:$PATH"
+        log "AWS CLI installed."
+    fi
 }
 
 # Function to configure AWS CLI.

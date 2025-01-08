@@ -74,6 +74,9 @@ sudo mv "$AWS_MOUNT_SERVICE" "$SYSTEMD_DIR/"
 # sudo chmod 700 "$STARTUP_SCRIPT"
 # sudo chmod 700 "$AWS_MOUNT_SCRIPT"
 
+chmod u+x "$STARTUP_SCRIPT"
+chmod u+x "$AWS_MOUNT_SCRIPT"
+
 # Reload systemd daemon
 log "Reloading systemd daemon..."
 sudo systemctl daemon-reload

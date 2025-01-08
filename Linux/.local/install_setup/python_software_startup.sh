@@ -72,24 +72,6 @@ install_poetry() {
 }
 
 
-# Function to install AWS CLI.
-install_aws_cli() {
-    log "Installing AWS CLI..."
-    if command -v aws >/dev/null 2>&1; then
-        log "AWS CLI is already installed."
-    else
-        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-        unzip awscliv2.zip
-        ./aws/install --install-dir $HOME/.local/lib/ --bin-dir $HOME/.local/bin/
-        rm -rf aws awscliv2.zip
-
-        # # Update PATH for the current session and future sessions.
-        # echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
-        # export PATH="$HOME/.local/bin:$PATH"
-        log "AWS CLI installed."
-    fi
-}
-
 # Function to prepare the mount point for AWS S3.
 prepare_mount_point() {
     MOUNT_POINT="/data"
@@ -148,7 +130,6 @@ install_vscode_extensions() {
 install_pyenv
 install_python
 install_poetry
-install_aws_cli
 prepare_mount_point
 generate_ssl_certificate
 install_vscode_extensions
