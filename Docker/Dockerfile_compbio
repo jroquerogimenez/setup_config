@@ -10,6 +10,18 @@ RUN apt-get update \
     bowtie2 \
     && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
+
+## Install sratoolkit
+
+# Inside ~/.local/lib
+# wget https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/3.2.0/sratoolkit.3.2.0-ubuntu64.tar.gz
+# tar -xzvf sratoolkit.3.2.0-ubuntu64.tar.gz
+# Copy symlinks from the lib/package/bin to the bin/. 
+# find . -maxdepth 1 -type l -exec sh -c 'ln -sf "$(readlink -f "{}")" "/home/ubuntu/.local/bin/$(basename "{}")"' \;
+
+
+
+
 ## Install Nextflow
 
 WORKDIR /usr/local/bin/
